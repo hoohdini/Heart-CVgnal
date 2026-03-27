@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heart CV-gnal ♥</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       CSS Custom Properties — Pastel "Heart Signal" Palette
+    ═══════════════════════════════════════════════════ */
+    :root {
+      --bg-page:       #FFF8FA;
+      --bg-panel:      rgba(255, 255, 255, 0.94);
+      --pink-pastel:   #E8799C;
+      --pink-light:    #F9C7D8;
+      --pink-pale:     #FFF0F5;
+      --pink-deep:     #C4587A;
+      --pink-muted:    #F4B8D0;
+      --text-dark:     #2D2438;
+      --text-mid:      #7A6080;
+      --text-soft:     #B09AB8;
+      --white:         #ffffff;
+      --green-sig:     #5cdb6a;
+      --border-r:      14px;
+      --panel-w:       290px;
+      --header-h:      62px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Reset & Base
+    ═══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-dark);
+      background: var(--bg-page);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Animated Background — soft floating hearts
+    ═══════════════════════════════════════════════════ */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 15%, rgba(244, 184, 208, 0.22), transparent),
+        radial-gradient(ellipse 60% 50% at 85% 85%, rgba(249, 199, 216, 0.18), transparent),
+        var(--bg-page);
+      overflow: hidden;
+    }
+
+    .heart-p {
+      position: absolute;
+      bottom: -30px;
+      opacity: 0;
+      color: var(--pink-pastel);
+      animation: floatUp linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0)     rotate(0deg);   opacity: 0; }
+      8%   { opacity: 0.14; }
+      88%  { opacity: 0.05; }
+      100% { transform: translateY(-108vh) rotate(420deg); opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Plaid Heart SVG — shared sprite (hidden)
+    ═══════════════════════════════════════════════════ */
+    #svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    .logo-heart {
+      display: inline-block;
+      vertical-align: middle;
+      position: relative;
+      top: -2px;
+      margin: 0 3px;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Calibration Screen
+    ═══════════════════════════════════════════════════ */
+    #calib-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: var(--bg-page);
+      transition: opacity 0.7s ease;
+    }
+
+    #calib-screen.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .calib-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: 5px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .calib-sub {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      color: var(--text-mid);
+    }
+
+    .calib-hint {
+      font-size: 0.72rem;
+      color: var(--text-soft);
+      margin-top: -6px;
+    }
+
+    #calib-track {
+      width: min(380px, 80vw);
+      height: 10px;
+      background: rgba(244, 184, 208, 0.25);
+      border-radius: 99px;
+      border: 1px solid rgba(232, 121, 156, 0.25);
+      overflow: hidden;
+    }
+
+    #calib-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink-light), var(--pink-pastel));
+      border-radius: 99px;
+      transition: width 0.35s ease;
+      box-shadow: 0 0 8px rgba(232,121,156,0.30);
+    }
+
+    #calib-pct {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--pink-pastel);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Header
+    ═══════════════════════════════════════════════════ */
+    #header {
+      position: relative;
+      z-index: 20;
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      background: rgba(255, 255, 255, 0.90);
+      border-bottom: 1px solid rgba(244, 184, 208, 0.55);
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 16px rgba(232,121,156,0.08);
+    }
+
+    /* Top pastel pink accent line */
+    #header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--pink-light), var(--pink-pastel), var(--pink-light), transparent);
+    }
+
+    .app-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+    }
+
+    /* Timer */
+    #timer-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #timer-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text-dark);
+      transition: color 0.4s;
+    }
+
+    #timer-val.urgent {
+      color: var(--pink-deep);
+      animation: urgentPulse 0.9s ease-in-out infinite alternate;
+    }
+
+    @keyframes urgentPulse {
+      from { opacity: 1; text-shadow: 0 0 6px rgba(196,88,122,0.20); }
+      to   { opacity: 0.60; text-shadow: 0 0 14px rgba(196,88,122,0.50); }
+    }
+
+    /* Eval-window progress bar */
+    #eval-bar {
+      width: 110px;
+      height: 3px;
+      background: rgba(244, 184, 208, 0.30);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    #eval-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--pink-pastel);
+      border-radius: 99px;
+      transition: width 0.5s linear;
+    }
+
+    /* Status dots */
+    #status-dots {
+      display: flex;
+      gap: 16px;
+      font-size: 0.68rem;
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+    .dot-row { display: flex; align-items: center; gap: 6px; }
+    .s-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(176, 154, 184, 0.30);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .s-dot.ok  {
+      background: var(--green-sig);
+      box-shadow: 0 0 7px var(--green-sig);
+    }
+    .s-dot.bad {
+      background: var(--pink-pastel);
+      box-shadow: 0 0 7px var(--pink-pastel);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Main Content (video + panel)
+    ═══════════════════════════════════════════════════ */
+    #main {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      gap: 14px;
+      padding: 14px 18px 14px;
+      height: calc(100vh - var(--header-h));
+      overflow: hidden;
+    }
+
+    /* ── Video Area ── */
+    #video-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    #video-border {
+      position: relative;
+      border-radius: calc(var(--border-r) + 4px);
+      padding: 3px;
+      background: linear-gradient(135deg, var(--pink-light) 0%, var(--pink-muted) 50%, var(--pink-pastel) 100%);
+      animation: glowPulse 3.5s ease-in-out infinite alternate;
+      box-shadow: 0 8px 32px rgba(232,121,156,0.18);
+    }
+
+    @keyframes glowPulse {
+      from { box-shadow: 0 6px 24px rgba(232,121,156,0.15), 0 0 40px rgba(232,121,156,0.07); }
+      to   { box-shadow: 0 10px 36px rgba(232,121,156,0.30), 0 0 70px rgba(232,121,156,0.12); }
+    }
+
+    #video-stream {
+      display: block;
+      border-radius: var(--border-r);
+      max-width:  100%;
+      max-height: calc(100vh - var(--header-h) - 30px);
+      object-fit: contain;
+      background: #f0e8ef;
+    }
+
+    /* ── Side Panel ── */
+    #side-panel {
+      width: var(--panel-w);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--bg-panel);
+      border: 1.5px solid rgba(244, 184, 208, 0.70);
+      border-radius: var(--border-r);
+      padding: 14px 16px;
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 2px 14px rgba(232,121,156,0.08),
+        0 1px 4px rgba(232,121,156,0.05);
+    }
+
+    .card-title {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--pink-pastel);
+      margin-bottom: 10px;
+    }
+
+    /* Score */
+    .score-row {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      margin-bottom: 2px;
+    }
+
+    #score-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--pink-deep);
+      display: inline-block;
+      transition: color 0.4s;
+    }
+
+    #score-val.bump {
+      animation: scoreBump 0.38s ease;
+    }
+
+    @keyframes scoreBump {
+      0%   { transform: scale(1); }
+      45%  { transform: scale(1.13); }
+      100% { transform: scale(1); }
+    }
+
+    .score-denom { font-size: 0.9rem; color: var(--text-mid); font-weight: 500; }
+
+    #mood-label {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: var(--text-mid);
+      margin-bottom: 12px;
+      min-height: 1em;
+    }
+
+    /* Gauge */
+    .gauge-wrap {
+      position: relative;
+      height: 20px;
+      overflow: visible;
+    }
+
+    .gauge-track {
+      position: absolute;
+      inset: 0;
+      background: rgba(244, 184, 208, 0.25);
+      border-radius: 99px;
+      border: 1px solid rgba(232, 121, 156, 0.20);
+      overflow: hidden;
+    }
+
+    #gauge-fill {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, var(--pink-light), var(--pink-pastel), var(--pink-deep));
+      border-radius: 99px;
+      transition: width 0.9s cubic-bezier(.25,.46,.45,.94);
+      box-shadow: 0 0 8px rgba(232,121,156,0.30);
+    }
+
+    #gauge-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      font-size: 17px;
+      pointer-events: none;
+      transition: left 0.9s cubic-bezier(.25,.46,.45,.94);
+      filter: drop-shadow(0 0 4px rgba(232,121,156,0.70));
+      z-index: 2;
+    }
+
+    /* Divider */
+    .div-line {
+      height: 1px;
+      background: rgba(244, 184, 208, 0.40);
+      margin: 8px 0;
+    }
+
+    /* Metrics */
+    .metrics { display: flex; flex-direction: column; gap: 7px; }
+
+    .m-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+    }
+
+    .m-label { color: var(--text-soft); font-weight: 500; }
+
+    .m-val {
+      font-weight: 600;
+      color: var(--text-dark);
+      transition: color 0.3s;
+    }
+
+    .m-val.warn { color: var(--pink-deep); }
+    .m-val.ok   { color: var(--green-sig); }
+
+    /* Signal badges */
+    #signals {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 24px;
+    }
+
+    .badge {
+      font-size: 0.60rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      animation: badgePop 0.25s ease;
+    }
+
+    @keyframes badgePop {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .badge-green {
+      background: rgba(92, 219, 106, 0.12);
+      color: #3db34a;
+      border: 1px solid rgba(92, 219, 106, 0.40);
+    }
+    .badge-red {
+      background: rgba(232, 121, 156, 0.12);
+      color: var(--pink-deep);
+      border: 1px solid rgba(232, 121, 156, 0.35);
+    }
+
+    /* Event log */
+    #event-log {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .log-item {
+      font-size: 0.66rem;
+      color: var(--text-mid);
+      line-height: 1.3;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(244, 184, 208, 0.30);
+    }
+
+    .log-item:first-child { opacity: 1.0; }
+    .log-item:nth-child(2) { opacity: 0.72; }
+    .log-item:nth-child(3) { opacity: 0.50; }
+    .log-item:nth-child(4) { opacity: 0.30; }
+
+    /* ═══════════════════════════════════════════════════
+       Toast Notification
+    ═══════════════════════════════════════════════════ */
+    #toast {
+      position: fixed;
+      top: calc(var(--header-h) + 12px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-6px);
+      z-index: 300;
+      padding: 9px 28px;
+      border-radius: 99px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.32s ease, transform 0.32s ease;
+    }
+
+    #toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.positive {
+      background: linear-gradient(120deg, rgba(232,121,156,0.92), rgba(196,88,122,0.92));
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.30);
+      box-shadow: 0 4px 24px rgba(232,121,156,0.40);
+    }
+
+    #toast.negative {
+      background: rgba(255, 248, 250, 0.96);
+      color: var(--pink-deep);
+      border: 1px solid rgba(244, 184, 208, 0.60);
+      box-shadow: 0 4px 20px rgba(232,121,156,0.15);
+    }
+
+    #toast.neutral {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--text-mid);
+      border: 1px solid rgba(244, 184, 208, 0.50);
+      box-shadow: 0 4px 16px rgba(232,121,156,0.10);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Final Result Screen
+    ═══════════════════════════════════════════════════ */
+    #final-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 240, 245, 0.82);
+      backdrop-filter: blur(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.9s ease;
+    }
+
+    #final-screen.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Top/bottom pastel pink bars on final screen */
+    #final-screen::before,
+    #final-screen::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, var(--pink-light), var(--pink-pastel), var(--pink-light), transparent);
+    }
+    #final-screen::before { top: 0; }
+    #final-screen::after  { bottom: 0; }
+
+    .final-card {
+      text-align: center;
+      padding: 50px 68px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1.5px solid rgba(244, 184, 208, 0.70);
+      border-radius: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      max-width: 540px;
+      box-shadow:
+        0 8px 40px rgba(232,121,156,0.16),
+        0 2px 12px rgba(232,121,156,0.08);
+    }
+
+    .final-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      letter-spacing: 3px;
+      color: var(--text-dark);
+    }
+
+    .final-score-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    #final-score-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 5.2rem;
+      color: var(--pink-deep);
+      line-height: 1;
+      text-shadow: 0 2px 16px rgba(196,88,122,0.20);
+    }
+
+    .final-denom { font-size: 1.4rem; color: var(--text-mid); font-weight: 500; }
+
+    #final-msg {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text-mid);
+      min-height: 1.4em;
+    }
+
+    .final-gauge-track {
+      width: min(380px, 70vw);
+      height: 18px;
+      background: rgba(244, 184, 208, 0.22);
+      border-radius: 99px;
+      border: 1px solid rgba(232, 121, 156, 0.20);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    #final-gauge-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink-light), var(--pink-pastel), var(--pink-deep));
+      border-radius: 99px;
+      transition: width 2.2s cubic-bezier(.16,1,.3,1);
+      box-shadow: 0 0 10px rgba(232,121,156,0.35);
+    }
+
+    .final-hint {
+      font-size: 0.65rem;
+      color: var(--text-soft);
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Hidden SVG defs (plaid heart pattern, reused via unique IDs) ── -->
+  <svg id="svg-defs" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Plaid pattern for header heart -->
+      <pattern id="plaid-h" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="#F9C7D8"/>
+        <rect y="0" width="10" height="5" fill="#E8799C" opacity="0.40"/>
+        <rect x="0" y="0" width="5" height="10" fill="#C4587A" opacity="0.28"/>
+      </pattern>
+      <clipPath id="hclip-h">
+        <path d="M16,27C16,27,1.5,17.5,1.5,9C1.5,4.7,5,2,9,2c2.8,0,5.3,1.7,7,4.2C17.7,3.7,20.2,2,23,2c4,0,7.5,2.7,7.5,7C30.5,17.5,16,27,16,27Z"/>
+      </clipPath>
+      <!-- Plaid pattern for calibration heart -->
+      <pattern id="plaid-c" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
+        <rect width="14" height="14" fill="#F9C7D8"/>
+        <rect y="0" width="14" height="7" fill="#E8799C" opacity="0.40"/>
+        <rect x="0" y="0" width="7" height="14" fill="#C4587A" opacity="0.28"/>
+      </pattern>
+      <clipPath id="hclip-c">
+        <path d="M22,37C22,37,2,24,2,12C2,6.5,6.8,3,12,3c3.8,0,7.2,2.3,9.5,5.8C23.8,5.3,27.2,3,31,3c5.2,0,10,3.5,10,9C41,24,22,37,22,37Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
+  <!-- ── Animated background layer ── -->
+  <div id="bg-layer"></div>
+
+  <!-- ══════════════════════════════════════════
+       Calibration screen  (shown on startup)
+  ══════════════════════════════════════════ -->
+  <div id="calib-screen">
+    <div class="calib-logo">
+      HEART
+      <svg class="logo-heart" viewBox="0 0 43 40" width="36" height="34" xmlns="http://www.w3.org/2000/svg">
+        <rect width="43" height="40" fill="url(#plaid-c)" clip-path="url(#hclip-c)"/>
+        <path d="M22,37C22,37,2,24,2,12C2,6.5,6.8,3,12,3c3.8,0,7.2,2.3,9.5,5.8C23.8,5.3,27.2,3,31,3c5.2,0,10,3.5,10,9C41,24,22,37,22,37Z" fill="none" stroke="#E8799C" stroke-width="1.5"/>
+      </svg>
+      CV-GNAL
+    </div>
+    <div class="calib-sub">Affection / Interest Analyzer</div>
+    <div class="calib-hint">Look straight at the camera to calibrate your baseline.</div>
+    <div id="calib-track"><div id="calib-fill"></div></div>
+    <div id="calib-pct">0%</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       Header
+  ══════════════════════════════════════════ -->
+  <div id="header">
+    <div class="app-title">
+      HEART
+      <svg class="logo-heart" viewBox="0 0 32 30" width="22" height="20" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="30" fill="url(#plaid-h)" clip-path="url(#hclip-h)"/>
+        <path d="M16,27C16,27,1.5,17.5,1.5,9C1.5,4.7,5,2,9,2c2.8,0,5.3,1.7,7,4.2C17.7,3.7,20.2,2,23,2c4,0,7.5,2.7,7.5,7C30.5,17.5,16,27,16,27Z" fill="none" stroke="#E8799C" stroke-width="1.5"/>
+      </svg>
+      CV-GNAL
+    </div>
+
+    <div id="timer-col">
+      <div id="timer-val">05:00</div>
+      <div id="eval-bar"><div id="eval-fill"></div></div>
+    </div>
+
+    <div id="status-dots">
+      <div class="dot-row"><div class="s-dot" id="dot-face"></div><span>Face</span></div>
+      <div class="dot-row"><div class="s-dot" id="dot-pose"></div><span>Pose</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       Main content
+  ══════════════════════════════════════════ -->
+  <div id="main">
+
+    <!-- Video feed -->
+    <div id="video-area">
+      <div id="video-border">
+        <img id="video-stream" src="/video_feed" alt="Live Camera Feed" loading="eager" />
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div id="side-panel">
+
+      <!-- Score & Heart Gauge -->
+      <div class="card">
+        <div class="card-title">Heart Gauge</div>
+        <div class="score-row">
+          <div id="score-val">50</div>
+          <div class="score-denom">/ 100</div>
+        </div>
+        <div id="mood-label">Warming Up</div>
+        <div class="gauge-wrap">
+          <div class="gauge-track">
+            <div id="gauge-fill"></div>
+          </div>
+          <span id="gauge-heart">♥</span>
+        </div>
+      </div>
+
+      <!-- Active Signals + Metrics -->
+      <div class="card">
+        <div class="card-title">Live Signals</div>
+        <div id="signals"></div>
+        <div class="div-line" style="margin-top:10px;"></div>
+        <div class="metrics">
+          <div class="m-row">
+            <span class="m-label">Head Yaw</span>
+            <span class="m-val" id="m-yaw">0.0°</span>
+          </div>
+          <div class="m-row">
+            <span class="m-label">Head Pitch</span>
+            <span class="m-val" id="m-pitch">0.0°</span>
+          </div>
+          <div class="m-row">
+            <span class="m-label">Arms</span>
+            <span class="m-val" id="m-arms">free</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event log -->
+      <div class="card" style="flex: 1; overflow: hidden;">
+        <div class="card-title">Recent Events</div>
+        <div id="event-log"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       Toast notification (top-center)
+  ══════════════════════════════════════════ -->
+  <div id="toast"></div>
+
+  <!-- ══════════════════════════════════════════
+       Final result screen
+  ══════════════════════════════════════════ -->
+  <div id="final-screen">
+    <div class="final-card">
+      <div class="final-title">Time's Up! ♥</div>
+      <div class="final-score-row">
+        <div id="final-score-num">50</div>
+        <div class="final-denom">/ 100</div>
+      </div>
+      <div id="final-msg"></div>
+      <div class="final-gauge-track">
+        <div id="final-gauge-fill"></div>
+      </div>
+      <div class="final-hint">Heart CV-gnal · Affection Analysis Complete</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       JavaScript
+  ══════════════════════════════════════════ -->
+  <script>
+    "use strict";
+
+    /* ── Local state ────────────────────────────────────────── */
+    let lastEventId    = 0;
+    let toastTimer     = null;
+    let wasCalibrating = true;
+    let finalShown     = false;
+
+    /* ── Floating hearts ─────────────────────────────────────
+       Create heart particles once on load.                   */
+    (function seedHearts() {
+      const layer   = document.getElementById('bg-layer');
+      const glyphs  = ['♥', '♡', '✿', '❋', '✦'];
+      for (let i = 0; i < 22; i++) {
+        const el          = document.createElement('span');
+        el.className      = 'heart-p';
+        el.textContent    = glyphs[i % glyphs.length];
+        el.style.left     = `${Math.random() * 100}%`;
+        el.style.fontSize = `${11 + Math.random() * 16}px`;
+        el.style.animationDuration = `${9 + Math.random() * 13}s`;
+        el.style.animationDelay   = `${Math.random() * 15}s`;
+        layer.appendChild(el);
+      }
+    })();
+
+    /* ── Gauge ───────────────────────────────────────────────
+       Moves both the fill bar and the floating heart emoji.  */
+    function setGauge(pct) {
+      const p = Math.max(0, Math.min(100, pct));
+      document.getElementById('gauge-fill').style.width = `${p}%`;
+      document.getElementById('gauge-heart').style.left = `${p}%`;
+    }
+
+    /* ── Toast ───────────────────────────────────────────────
+       Show a floating pill notification and auto-hide it.    */
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      if (toastTimer) clearTimeout(toastTimer);
+
+      el.textContent = msg;
+      el.className   = '';                          // clear old classes
+
+      if      (msg.startsWith('+')) el.classList.add('positive');
+      else if (msg.startsWith('-')) el.classList.add('negative');
+      else                          el.classList.add('neutral');
+
+      void el.offsetWidth;                          // force reflow
+      el.classList.add('visible');
+
+      toastTimer = setTimeout(() => el.classList.remove('visible'), 3800);
+    }
+
+    /* ── Signal badges ───────────────────────────────────────*/
+    function renderSignals(d) {
+      let html = '';
+      if (d.is_leaning)      html += '<span class="badge badge-green">▲ Lean In</span>';
+      if (d.is_looking_away) html += '<span class="badge badge-red">👀 Look Away</span>';
+      if (d.is_barrier)      html += '<span class="badge badge-red">✖ Barrier</span>';
+      document.getElementById('signals').innerHTML = html;
+    }
+
+    /* ── Event log ───────────────────────────────────────────*/
+    function renderEventLog(entries) {
+      document.getElementById('event-log').innerHTML =
+        entries.map(e => `<div class="log-item">${e}</div>`).join('');
+    }
+
+    /* ── Score bump animation ────────────────────────────────*/
+    function bumpScore(el) {
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
+
+    /* ── Final screen ────────────────────────────────────────*/
+    function showFinalScreen(score, msg) {
+      if (finalShown) return;
+      finalShown = true;
+
+      document.getElementById('final-score-num').textContent = score;
+      document.getElementById('final-msg').textContent       = msg;
+
+      const fs = document.getElementById('final-screen');
+      fs.classList.add('show');
+
+      // Animate gauge bar after the screen fades in
+      setTimeout(() => {
+        document.getElementById('final-gauge-fill').style.width = `${score}%`;
+      }, 500);
+    }
+
+    /* ── Main update ─────────────────────────────────────────
+       Called every 500 ms with the latest /status JSON.      */
+    function update(d) {
+
+      /* === Calibration phase === */
+      if (d.is_calibrating) {
+        document.getElementById('calib-fill').style.width = `${d.calib_progress}%`;
+        document.getElementById('calib-pct').textContent  = `${d.calib_progress}%`;
+        wasCalibrating = true;
+        return;
+      }
+
+      /* Hide calibration screen once done */
+      if (wasCalibrating) {
+        document.getElementById('calib-screen').classList.add('hide');
+        wasCalibrating = false;
+      }
+
+      /* === Score === */
+      const scoreEl   = document.getElementById('score-val');
+      const prevScore = parseInt(scoreEl.textContent, 10);
+      if (d.score !== prevScore) {
+        scoreEl.textContent = d.score;
+        bumpScore(scoreEl);
+      }
+      document.getElementById('mood-label').textContent = d.mood;
+      setGauge(d.score);
+
+      /* === Timer === */
+      const timerEl = document.getElementById('timer-val');
+      timerEl.textContent = d.time_left;
+      const parts    = d.time_left.split(':');
+      const totalSec = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      timerEl.classList.toggle('urgent', totalSec < 60);
+
+      /* Eval-window progress bar */
+      document.getElementById('eval-fill').style.width = `${d.eval_progress}%`;
+
+      /* === Status dots === */
+      document.getElementById('dot-face').className = 's-dot ' + (d.face_detected ? 'ok' : 'bad');
+      document.getElementById('dot-pose').className = 's-dot ' + (d.pose_detected ? 'ok' : 'bad');
+
+      /* === Metrics === */
+      const yawEl   = document.getElementById('m-yaw');
+      const pitchEl = document.getElementById('m-pitch');
+      const armsEl  = document.getElementById('m-arms');
+
+      yawEl.textContent   = `${d.yaw_deg >= 0 ? '+' : ''}${d.yaw_deg}°`;
+      pitchEl.textContent = `${d.pitch_deg >= 0 ? '+' : ''}${d.pitch_deg}°`;
+      armsEl.textContent  = d.is_barrier ? 'CROSSED' : 'free';
+
+      yawEl.className   = 'm-val' + (Math.abs(d.yaw_deg)   > 20 ? ' warn' : '');
+      pitchEl.className = 'm-val' + (Math.abs(d.pitch_deg) > 15 ? ' warn' : '');
+      armsEl.className  = 'm-val' + (d.is_barrier ? ' warn' : ' ok');
+
+      /* === Signals & log === */
+      renderSignals(d);
+      if (d.event_log && d.event_log.length) renderEventLog(d.event_log);
+
+      /* === Toast: only fire when event_id increases === */
+      if (d.event_id > lastEventId && d.event_message) {
+        lastEventId = d.event_id;
+        showToast(d.event_message);
+      }
+
+      /* === Final screen === */
+      if (d.is_finished) showFinalScreen(d.score, d.final_message);
+    }
+
+    /* ── Poll loop ───────────────────────────────────────────*/
+    function poll() {
+      fetch('/status')
+        .then(r => r.json())
+        .then(update)
+        .catch(() => {});   // swallow transient network errors
+    }
+
+    poll();                           // immediate call on load
+    setInterval(poll, 500);           // then every 500 ms
+  </script>
+</body>
+</html>
