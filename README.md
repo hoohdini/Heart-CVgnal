@@ -2,7 +2,7 @@
 
 **Pure Computer Vision — Real-time Affection / Interest Analyzer**
 
-A mock dating simulator that analyzes non-verbal engagement signals in real time using only a webcam.
+A mock dating simulator that analyzes non-verbal engagement signals in real time using only a webcam/mobile camera.
 No audio or NLP — MediaPipe + OpenCV only. Optional Claude Vision API cross-validation.
 
 ---
